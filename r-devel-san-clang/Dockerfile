@@ -5,8 +5,10 @@
 ## start with the Docker 'base R' Debian-based image
 FROM r-base:latest
 
+RUN echo "deb http://security.debian.org/debian-security bullseye-security main contrib non-free" >> /etc/apt/sources.list
+
 ## Remain current
-RUN apt-get update -qq \
+RUN apt-get update  \
     && apt-get dist-upgrade -y
 
 ## From the Build-Depends of the Debian R package, plus subversion, and clang-3.8
@@ -14,7 +16,7 @@ RUN apt-get update -qq \
 ##
 ## Also add   git autotools-dev automake  so that we can build littler from source
 ##
-RUN apt-get update -qq \
+RUN apt-get update  \
     && apt-get install -t unstable -y --no-install-recommends \
     automake \
     autotools-dev \
@@ -45,7 +47,7 @@ RUN apt-get update -qq \
     libx11-dev \
     libxml2-dev \
     libxt-dev \
-    llvm-7 \
+    llvm-* \
     mpack \
     subversion \
     tcl8.6-dev \
@@ -138,9 +140,10 @@ RUN ASAN_OPTIONS=detect_leaks=0 R --slave -e "install.packages('littler')" \
 
 ### od tego miejsca wlasna tworczosc z wybudowaniem rstudio:
 
-RUN apt-get install -y libxml2 libxml2-dev libssl-dev vim wget gdebi-core libapparmor1 libclang-11-dev libclang-dev libpq5 psmisc sudo git libgit2-dev
+RUN apt-get update && apt-get install -y libxml2 libxml2-dev libssl-dev vim wget gdebi-core libapparmor1 libclang-11-dev libclang-dev libpq5 psmisc sudo git libgit2-dev
 
 RUN wget https://download2.rstudio.org/server/bionic/amd64/rstudio-server-1.4.1106-amd64.deb
+RUN apt-get install -y lsb-release
 RUN dpkg -i rstudio-server-1.4.1106-amd64.deb
 
 USER root
